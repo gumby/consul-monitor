@@ -18,6 +18,7 @@ echo Copying consul config...
 sudo mkdir /etc/consul.d
 sudo chmod a+w /etc/consul.d
 sudo jq --arg addr "$2" '. + { "bind_addr": $addr }' /vagrant/conf/consul/$1/config.json > tmp.$$.json && mv tmp.$$.json /etc/consul.d/config.json
+sudo jq --arg addr "$2" '. + { "client_addr": $addr }' /vagrant/conf/consul/$1/config.json > tmp.$$.json && mv tmp.$$.json /etc/consul.d/config.json
 
 echo Creating consul user...
 sudo addgroup consul
