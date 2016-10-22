@@ -1,6 +1,6 @@
 {
   "bootstrap": true,
   "server": true,
-  "datacenter": "vagrant",
+  "datacenter": "vg-dc1",
   "data_dir": "/tmp/consul"
 }

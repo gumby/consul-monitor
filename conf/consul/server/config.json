@@ -1,10 +1,9 @@
 {
   "bootstrap": false,
   "server": true,
-  "datacenter": "vagrant",
-  "data_dir": "/var/consul",
+  "datacenter": "vg-dc1",
+  "data_dir": "/tmp/consul",
   "start_join": [
     "10.100.199.201"
-  ],
-  "bind_addr": "10.100.199.201"
+  ]
 }
