@@ -1,0 +1,12 @@
+{
+  "bootstrap_expect": 3,
+  "server": true,
+  "datacenter": "vg-dc1",
+  "data_dir": "/tmp/consul",
+  "ui_dir": "/opt/consul/web",
+  "start_join": [
+    "10.100.199.101",
+    "10.100.199.102",
+    "10.100.199.103"
+  ]
+}
