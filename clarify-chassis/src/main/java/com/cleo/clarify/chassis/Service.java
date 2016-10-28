@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jetty.server.Server;
 
+import com.cleo.clarify.chassis.consul.ConsulLifecycleListener;
 import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -18,6 +19,13 @@ public abstract class Service {
 		Injector injector = Guice.createInjector(Stage.PRODUCTION, serviceModules);
 		int port = injector.getInstance(Config.class).getInt("service.port");
 		final Server server = new Server(port);
+		try {
+			server.addLifeCycleListener(injector.getInstance(ConsulLifecycleListener.class));
+            server.setStopAtShutdown(true);
+			server.start();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 
@@ -31,6 +39,12 @@ public abstract class Service {
 			}
 			
 		}, "ShutdownHook"));
+		
+		try {
+			server.join();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 		
 		try {
 			server.join();
