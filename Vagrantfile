@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 VAGRANTFILE_API_VERSION = "2"
-NUM_CONSUL_NODES = 1
+NUM_CONSUL_NODES = 3
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "ubuntu/xenial64"
@@ -17,9 +17,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       node.vm.provision "shell", 
         path: "provisioners/install_consul.sh", 
         args: ["vg-dc1", ip]
-      node.vm.provision "shell",
-        path: "provisioners/install_nomad.sh",
-        args: [ip]
+#      node.vm.provision "shell",
+#        path: "provisioners/install_nomad.sh",
+#        args: [ip]
       node.vm.hostname = "consul-#{i}"
       node.vm.network "private_network", ip: ip 
     end
