@@ -39,7 +39,8 @@ public class ConsulRegistrator {
 		
 		Registration.RegCheck healthCheck = ImmutableRegCheck.builder()
 				.http(healthUrl.toExternalForm())
-				.interval("5s")
+				.interval("10s")
+				.timeout("5s")
 				.build();
 		
 		Registration registration = ImmutableRegistration.builder()
