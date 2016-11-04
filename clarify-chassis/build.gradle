@@ -1,13 +1,68 @@
-group 'com.cleo.clarify.chassis'
-version '1.0'
-
-apply plugin: 'java'
-
-repositories {
-    mavenCentral()
+buildscript {
+  repositories {
+    maven { url 'http://192.168.33.10:8081/artifactory/plugins-release' }      
+  }
+  dependencies {
+    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
+  }
 }
 
-// In this section you declare the dependencies for your production and test code
+plugins {
+  id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.artifactory'
+
+group 'com.cleo.clarify.chassis'
+version '0.2.2'
+
+shadowJar {
+  baseName = 'com.cleo.clarify.chassis'
+  mergeServiceFiles()
+}
+
+repositories {
+  mavenCentral()
+  maven { url 'http://192.168.33.10:8081/artifactory/libs-release-local' }
+}
+
+def libraryGroupId = 'com.cleo.clarify'
+def libraryArtifactId = 'chassis'
+def libraryVersion = version
+
+publishing {
+  publications {
+    shadow(MavenPublication) {
+      groupId libraryGroupId
+      version libraryVersion
+      artifactId libraryArtifactId
+      artifact("$buildDir/libs/com.cleo.clarify.chassis-$version-all.jar")
+    }
+  }
+}
+
+artifactory {
+  contextUrl = 'http://192.168.33.10:8081/artifactory'
+  publish {
+    repository {
+      repoKey = 'libs-release-local'
+      username = 'admin'
+      password = 'password'
+      maven = true
+    }
+    defaults {
+      publications('shadow')
+      publishArtifacts = true
+
+      properties = ['qa.level': 'basic', 'dev.team': 'core']
+      publishPom = true
+    }
+  }
+}
+
 dependencies {
 	compile 'com.google.inject:guice:4.0'
 	compile 'com.google.inject.extensions:guice-servlet:4.0'
@@ -28,5 +83,13 @@ dependencies {
     
     compile 'io.dropwizard.metrics:metrics-healthchecks:3.1.2'
     
-    testCompile 'junit:junit:4.12'
+    compile 'io.grpc:grpc-netty:1.0.1'
+	compile 'io.grpc:grpc-protobuf:1.0.1'
+	compile 'io.grpc:grpc-stub:1.0.1'
+	compile 'io.grpc:grpc-services:1.0.1'
+	
+	testCompile 'com.pszymczyk.consul:embedded-consul:0.2.0'
+	testCompile 'junit:junit:4.12'
+	testCompile 'com.jayway.awaitility:awaitility:1.7.0'
+	testCompile 'com.cleo.clarify:test-service:1.0'
 }
