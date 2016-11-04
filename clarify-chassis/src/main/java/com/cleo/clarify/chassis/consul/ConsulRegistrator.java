@@ -16,23 +16,37 @@ public class ConsulRegistrator {
 
 	private AgentClient client;
 	private final String host;
-	private final int port;
+	private final int apiPort;
+	private final int rpcPort;
 	private final String serviceName;
-	private final String serviceId;
+	private final String apiServiceId;
+	private final String rpcServiceId;
 	
 	@Inject
 	public ConsulRegistrator(Consul consul, Config config) {
 		client = consul.agentClient();
-		host = config.getString("discovery.advertised.host");
-		port = config.getInt("discovery.advertised.port");
+		host = config.getString("registry.api.host");
+		apiPort = config.getInt("registry.api.port");
+		rpcPort = config.getInt("registry.rpc.port");
 		serviceName = config.getString("service.name");
-		serviceId = String.format("%s-%s", serviceName, UUID.randomUUID().toString());
+		apiServiceId = String.format("%s-%s", serviceName, UUID.randomUUID().toString());
+		rpcServiceId = String.format("%s-%s", serviceName, UUID.randomUUID().toString());
 	}
 	
 	public void register() {
+		registerRpc();
+		registerHttp();
+	}
+	
+	public void deregister() {
+		client.deregister(apiServiceId);
+		client.deregister(rpcServiceId);
+	}
+	
+	private void registerHttp() {
 		URL healthUrl = null;
 		try {
-			healthUrl = new URL("http", host, port, "/health");
+			healthUrl = new URL("http", host, apiPort, "/health");
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
@@ -45,16 +59,24 @@ public class ConsulRegistrator {
 		
 		Registration registration = ImmutableRegistration.builder()
 				.address(host)
-				.port(port)
-				.id(serviceId)
+				.port(apiPort)
+				.id(apiServiceId)
 				.name(serviceName)
+				.addTags("api")
 				.check(healthCheck)
 				.build();
 		
 		client.register(registration);
 	}
 	
-	public void deregister() {
-		client.deregister(serviceId);
+	private void registerRpc() {
+		Registration registration = ImmutableRegistration.builder()
+				.address(host)
+				.port(rpcPort)
+				.id(rpcServiceId)
+				.name(serviceName)
+				.addTags("rpc")
+				.build();
+		client.register(registration);
 	}
 }
