@@ -4,24 +4,27 @@ import org.eclipse.jetty.util.component.AbstractLifeCycle.AbstractLifeCycleListe
 import org.eclipse.jetty.util.component.LifeCycle;
 
 import com.google.inject.Inject;
+import com.typesafe.config.Config;
 
 public class ConsulLifecycleListener extends AbstractLifeCycleListener {
 
-	private ConsulRegistrator consulRegistrator;
+	private final ConsulRegistrator consulRegistrator;
+	private final boolean discoverable;
 	
 	@Inject
-	public ConsulLifecycleListener(ConsulRegistrator consulRegistrator) {
+	public ConsulLifecycleListener(ConsulRegistrator consulRegistrator, Config config) {
+		this.discoverable = config.getBoolean("service.discoverable");
 		this.consulRegistrator = consulRegistrator;
 	}
 	
 	@Override
 	public void lifeCycleStarted(LifeCycle event) {
-		consulRegistrator.register();
+		if (discoverable) consulRegistrator.register();
 	}
 	
 	@Override
 	public void lifeCycleStopping(LifeCycle event) {
-		consulRegistrator.deregister();
+		if (discoverable) consulRegistrator.deregister();
 	}
 
 }
