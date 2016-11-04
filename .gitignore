@@ -31,3 +31,7 @@ hs_err_pid*
 #Vagrant
 .vagrant/
 *.log
+
+#gradle
+.gradle
+/build/
