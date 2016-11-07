@@ -12,7 +12,7 @@ import com.orbitz.consul.model.agent.ImmutableRegistration;
 import com.orbitz.consul.model.agent.Registration;
 import com.typesafe.config.Config;
 
-public class ConsulRegistrator {
+public class ConsulRegistrator implements ServiceRegistrator {
 
 	private AgentClient client;
 	private final String host;
@@ -32,27 +32,21 @@ public class ConsulRegistrator {
 		apiServiceId = String.format("%s-%s", serviceName, UUID.randomUUID().toString());
 		rpcServiceId = String.format("%s-%s", serviceName, UUID.randomUUID().toString());
 	}
-	
-	public void register() {
-		registerRpc();
-		registerHttp();
+		
+	@Override
+	public void unregisterApi() {
+		client.deregister(apiServiceId);
 	}
 	
-	public void deregister() {
-		client.deregister(apiServiceId);
+	@Override
+	public void unregisterRpc() {
 		client.deregister(rpcServiceId);
 	}
 	
-	private void registerHttp() {
-		URL healthUrl = null;
-		try {
-			healthUrl = new URL("http", host, apiPort, "/health");
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-		
+	@Override
+	public void registerApi() {
 		Registration.RegCheck healthCheck = ImmutableRegCheck.builder()
-				.http(healthUrl.toExternalForm())
+				.http(healthUrl("/api-health").toExternalForm())
 				.interval("10s")
 				.timeout("5s")
 				.build();
@@ -69,14 +63,30 @@ public class ConsulRegistrator {
 		client.register(registration);
 	}
 	
-	private void registerRpc() {
+	@Override
+	public void registerRpc() {
+		Registration.RegCheck healthCheck = ImmutableRegCheck.builder()
+				.http(healthUrl("/rpc-health").toExternalForm())
+				.interval("10s")
+				.timeout("5s")
+				.build();
+		
 		Registration registration = ImmutableRegistration.builder()
 				.address(host)
 				.port(rpcPort)
 				.id(rpcServiceId)
 				.name(serviceName)
 				.addTags("rpc")
+				.check(healthCheck)
 				.build();
 		client.register(registration);
+	}
+	
+	private URL healthUrl(String endpoint) {
+		try {
+			return new URL("http", host, apiPort, endpoint);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

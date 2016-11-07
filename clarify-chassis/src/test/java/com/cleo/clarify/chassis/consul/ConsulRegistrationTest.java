@@ -26,7 +26,7 @@ public class ConsulRegistrationTest extends BaseConsulTest {
     
     @Test
     public void registers_rpc_service() {
-    	injector.getBinding(ConsulRegistrator.class).getProvider().get().register();
+    	injector.getBinding(ConsulRegistrator.class).getProvider().get().registerRpc();
     	
     	CatalogOptions catOpts = ImmutableCatalogOptions.builder().tag("rpc").build();
     	ConsulResponse<List<ServiceHealth>> serviceResponse =  consul().healthClient().getAllServiceInstances("test", catOpts);
@@ -38,7 +38,7 @@ public class ConsulRegistrationTest extends BaseConsulTest {
     
     @Test
     public void registers_http_service() {
-    	injector.getBinding(ConsulRegistrator.class).getProvider().get().register();
+    	injector.getBinding(ConsulRegistrator.class).getProvider().get().registerRpc();
     	
     	CatalogOptions catOpts = ImmutableCatalogOptions.builder().tag("api").build();
     	ConsulResponse<List<ServiceHealth>> serviceResponse =  consul().healthClient().getAllServiceInstances("test", catOpts);

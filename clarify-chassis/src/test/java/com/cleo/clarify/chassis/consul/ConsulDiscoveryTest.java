@@ -19,12 +19,12 @@ public class ConsulDiscoveryTest extends BaseConsulTest {
 	
 	@After
 	public void unregister() {
-		injector.getBinding(ConsulRegistrator.class).getProvider().get().deregister();
+		injector.getBinding(ConsulRegistrator.class).getProvider().get().unregisterApi();
 	}
 		
 	@Test
 	public void regsitered_service_is_discovered() {
-		injector.getBinding(ConsulRegistrator.class).getProvider().get().register();
+		injector.getBinding(ConsulRegistrator.class).getProvider().get().registerRpc();
 		ServiceDiscovery discovery = injector.getBinding(ServiceDiscovery.class).getProvider().get();
 		AtomicBoolean discovered = new AtomicBoolean(false);
 		

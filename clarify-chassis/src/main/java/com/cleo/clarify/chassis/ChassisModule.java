@@ -5,6 +5,7 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
 import com.cleo.clarify.chassis.config.ConfigModule;
 import com.cleo.clarify.chassis.consul.ConsulModule;
+import com.cleo.clarify.chassis.grpc.GrpcModule;
 import com.cleo.clarify.chassis.health.HealthModule;
 import com.cleo.clarify.chassis.health.checks.ChecksModule;
 import com.google.inject.AbstractModule;
@@ -21,6 +22,7 @@ public class ChassisModule extends AbstractModule {
 		install(new HealthModule());
 		install(new ChecksModule());
 		install(new ConsulModule());
+		install(new GrpcModule());
 		install(new ServletModule() {
 			
 			@Override

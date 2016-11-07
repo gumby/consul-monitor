@@ -1,12 +1,11 @@
 package com.cleo.clarify.chassis.grpc;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-
-import static com.jayway.awaitility.Awaitility.await;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -16,12 +15,9 @@ import com.cleo.clarify.chassis.grpc.test.Greeting;
 import com.cleo.clarify.chassis.grpc.test.Howdy;
 import com.cleo.clarify.chassis.grpc.test.TestServiceGrpc;
 import com.cleo.clarify.chassis.grpc.test.TestServiceGrpc.TestServiceBlockingStub;
-import com.google.inject.AbstractModule;
 import com.google.inject.Module;
-import com.google.inject.Scopes;
 import com.pszymczyk.consul.junit.ConsulResource;
 
-import io.grpc.BindableService;
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
@@ -29,7 +25,6 @@ import io.grpc.health.v1.HealthCheckRequest;
 import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.health.v1.HealthCheckResponse.ServingStatus;
 import io.grpc.health.v1.HealthGrpc;
-import io.grpc.stub.StreamObserver;
 
 public class GrpcBindingTest {
 		
@@ -82,25 +77,6 @@ public class GrpcBindingTest {
 			}
 			
 		}).start();
-	}
-	
-	private static final class GrpcTestServiceModule extends AbstractModule {
-		
-		@Override
-		protected void configure() {
-			bind(BindableService.class).to(GrpcTestService.class).in(Scopes.SINGLETON);
-		}
-		
-	}
-	
-	private static final class GrpcTestService extends TestServiceGrpc.TestServiceImplBase {
-		
-		@Override
-		public void testing(Greeting request, StreamObserver<Howdy> responseObserver) {
-			responseObserver.onNext(Howdy.newBuilder().setName(request.getName()).build());
-			responseObserver.onCompleted();
-		}
-	
 	}
 
 }

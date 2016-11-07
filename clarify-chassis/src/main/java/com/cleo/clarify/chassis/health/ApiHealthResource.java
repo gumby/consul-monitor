@@ -15,8 +15,8 @@ import com.codahale.metrics.health.HealthCheckRegistry;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-@Path("health")
-public class HealthResource {
+@Path("api-health")
+public class ApiHealthResource {
 
 	@Inject
 	private Provider<HealthCheckRegistry> healthCheckRegistryProvider;
