@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import com.cleo.clarify.chassis.api.ApiResourceTest;
 import com.cleo.clarify.chassis.consul.ConsulDiscoveryTest;
 import com.cleo.clarify.chassis.consul.ConsulRegistrationTest;
 import com.cleo.clarify.chassis.grpc.GrpcBindingTest;
@@ -26,6 +27,7 @@ import okhttp3.Request;
 	ConsulRegistrationTest.class,
 	GrpcBindingTest.class,
 	GrpcHealthStatusTest.class,
+	ApiResourceTest.class,
 })
 public class AllTests {
 
