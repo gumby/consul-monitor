@@ -15,9 +15,7 @@ import com.google.inject.servlet.ServletModule;
 public class ChassisModule extends AbstractModule {
 
 	@Override
-	protected void configure() {
-		bind(GuiceResteasyBootstrapServletContextListener.class).in(Scopes.SINGLETON);
-		
+	protected void configure() {		
 		install(new ConfigModule());
 		install(new HealthModule());
 		install(new ChecksModule());
@@ -31,6 +29,7 @@ public class ChassisModule extends AbstractModule {
 				serve("/*").with(HttpServletDispatcher.class);
 			}
 		});
+		bind(GuiceResteasyBootstrapServletContextListener.class).in(Scopes.SINGLETON);
 	}
 
 }
