@@ -17,7 +17,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.artifactory'
 
 group 'com.cleo.clarify.chassis'
-version '0.2.2'
+version '0.2.3'
 
 shadowJar {
   baseName = 'com.cleo.clarify.chassis'
@@ -26,6 +26,7 @@ shadowJar {
 
 repositories {
   mavenCentral()
+  jcenter()
   maven { url 'http://192.168.33.10:8081/artifactory/libs-release-local' }
 }
 
@@ -63,6 +64,12 @@ artifactory {
   }
 }
 
+test {
+    filter {
+        includeTestsMatching "*AllTests"
+    }
+}
+
 dependencies {
 	compile 'com.google.inject:guice:4.0'
 	compile 'com.google.inject.extensions:guice-servlet:4.0'
@@ -92,4 +99,6 @@ dependencies {
 	testCompile 'junit:junit:4.12'
 	testCompile 'com.jayway.awaitility:awaitility:1.7.0'
 	testCompile 'com.cleo.clarify:test-service:1.0'
+	testCompile 'com.github.tomakehurst:wiremock-standalone:2.3.1'
+	testCompile 'org.mockito:mockito-core:1.+'
 }

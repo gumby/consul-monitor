@@ -7,7 +7,8 @@ import static org.junit.Assert.assertThat;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.ClassRule;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.cleo.clarify.chassis.Service;
@@ -16,7 +17,6 @@ import com.cleo.clarify.chassis.grpc.test.Howdy;
 import com.cleo.clarify.chassis.grpc.test.TestServiceGrpc;
 import com.cleo.clarify.chassis.grpc.test.TestServiceGrpc.TestServiceBlockingStub;
 import com.google.inject.Module;
-import com.pszymczyk.consul.junit.ConsulResource;
 
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
@@ -27,14 +27,38 @@ import io.grpc.health.v1.HealthCheckResponse.ServingStatus;
 import io.grpc.health.v1.HealthGrpc;
 
 public class GrpcBindingTest {
-		
-	@ClassRule
-	public static final ConsulResource consul = new ConsulResource();
+	
+	private static Thread serviceThread;
+	
+	@BeforeClass
+	public static void startService() {
+		serviceThread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				new Service() {
+
+					@Override
+					public Module[] getModules() {
+						return new Module[] {
+								new GrpcTestServiceModule()
+						};
+					}
+					
+				}.run();
+			}
+			
+		});
+		serviceThread.start();
+	}
+	
+	@AfterClass
+	public static void stopService() {
+		serviceThread.interrupt();
+	}
 	
 	@Test
-	public void binds_grpc_service() {
-		startService();
-		
+	public void binds_grpc_service() {		
 		ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress("127.0.0.1", 9090).usePlaintext(true);
 		Channel channel = builder.build();
 		await().atMost(10, TimeUnit.SECONDS).ignoreExceptionsInstanceOf(StatusRuntimeException.class).until(new Callable<Boolean>() {
@@ -56,27 +80,6 @@ public class GrpcBindingTest {
 				.check(HealthCheckRequest.newBuilder().setService("")
 				.build());
 		return response.getStatus().equals(ServingStatus.SERVING);
-	}
-	
-	private void startService() {
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				System.setProperty("discovery.port", String.valueOf(consul.getHttpPort()));
-				new Service() {
-
-					@Override
-					public Module[] getModules() {
-						return new Module[] {
-								new GrpcTestServiceModule()
-						};
-					}
-					
-				}.run();
-			}
-			
-		}).start();
 	}
 
 }

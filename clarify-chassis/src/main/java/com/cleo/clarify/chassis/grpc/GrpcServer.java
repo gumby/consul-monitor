@@ -42,6 +42,11 @@ public class GrpcServer {
 		}
 	}
 	
+	public void stop() {
+		registrator.unregisterRpc();
+		server.shutdown();
+	}
+	
 	public void addService(BindableService service) {
 		builder.addService(service);
 	}
@@ -51,11 +56,12 @@ public class GrpcServer {
 
 			@Override
 			public void run() {
-				server.shutdown();
 				registrator.unregisterRpc();
+				server.shutdown();
 			}
 			
 		}, "shutdownhook-grpc"));
 	}
+
 	
 }

@@ -1,27 +1,37 @@
-package com.cleo.clarify.chassis.consul;
+package com.cleo.clarify.chassis;
 
 import static com.jayway.awaitility.Awaitility.await;
 
 import java.util.concurrent.TimeUnit;
 
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import com.cleo.clarify.chassis.config.ConfigModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Stage;
+import com.cleo.clarify.chassis.consul.ConsulDiscoveryTest;
+import com.cleo.clarify.chassis.consul.ConsulRegistrationTest;
+import com.cleo.clarify.chassis.grpc.GrpcBindingTest;
+import com.cleo.clarify.chassis.grpc.GrpcHealthStatusTest;
 import com.pszymczyk.consul.junit.ConsulResource;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-public class BaseConsulTest {
-	
-    @ClassRule
+@RunWith(Suite.class)
+@SuiteClasses({
+	ConsulDiscoveryTest.class,
+	ConsulRegistrationTest.class,
+	GrpcBindingTest.class,
+	GrpcHealthStatusTest.class,
+})
+public class AllTests {
+
+	@ClassRule
     public static final ConsulResource consul = new ConsulResource();
     static OkHttpClient client = new OkHttpClient();
-    static Injector injector;
 
 	@BeforeClass
 	public static void startConsulAndSetPort() throws Throwable {
@@ -34,10 +44,10 @@ public class BaseConsulTest {
 	    });
 	    System.setProperty("discovery.port", String.valueOf(consul.getHttpPort()));
 	}
-
-	@BeforeClass
-	public static void createInjection() {
-		injector = Guice.createInjector(Stage.PRODUCTION, new ConfigModule(), new ConsulModule());
-	}
+	
+    @After
+    public void resetConsul() {
+    	consul.reset();
+    }
 
 }

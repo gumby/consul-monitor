@@ -17,7 +17,7 @@ import com.google.inject.Provider;
 import io.grpc.health.v1.HealthCheckResponse.ServingStatus;
 
 @Path("rpc-health")
-public class RpcHealthResource {
+public class GrpcHealthResource {
 
 	@Inject
 	Provider<GrpcStatusRegistry> grpcRegistry;

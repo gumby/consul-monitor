@@ -32,8 +32,12 @@ public abstract class Service {
 		try {
 			jettyServer.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				jettyServer.stop();
+				injector.getInstance(GrpcServer.class).stop();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 

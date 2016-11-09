@@ -27,7 +27,7 @@ public class HealthModule extends AbstractModule {
 			
 		});
 		bind(ApiHealthResource.class).in(Scopes.SINGLETON);
-		bind(RpcHealthResource.class).in(Scopes.SINGLETON);
+		bind(GrpcHealthResource.class).in(Scopes.SINGLETON);
 		setCheckListener();
 	}
 

@@ -1,7 +1,9 @@
 package com.cleo.clarify.chassis.discovery;
 
+import com.google.common.net.HostAndPort;
+
 public interface ServiceDiscovery {
 	
-	void discover(String service, String transportType, DiscoveredCallback callback);
+	HostAndPort discover(String service, String transportType);
 
 }
