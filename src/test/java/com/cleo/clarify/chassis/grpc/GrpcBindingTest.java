@@ -12,10 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.cleo.clarify.chassis.Service;
-import com.cleo.clarify.chassis.grpc.test.Greeting;
-import com.cleo.clarify.chassis.grpc.test.Howdy;
-import com.cleo.clarify.chassis.grpc.test.TestServiceGrpc;
-import com.cleo.clarify.chassis.grpc.test.TestServiceGrpc.TestServiceBlockingStub;
+import com.cleo.clarify.chassis.grpc.TestServiceGrpc.TestServiceBlockingStub;
 import com.google.inject.Module;
 
 import io.grpc.Channel;

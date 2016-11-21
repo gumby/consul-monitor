@@ -1,8 +1,5 @@
 package com.cleo.clarify.chassis.grpc;
 
-import com.cleo.clarify.chassis.grpc.test.Greeting;
-import com.cleo.clarify.chassis.grpc.test.Howdy;
-import com.cleo.clarify.chassis.grpc.test.TestServiceGrpc;
 import com.google.inject.Inject;
 
 import io.grpc.ServerServiceDefinition;

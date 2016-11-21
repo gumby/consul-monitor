@@ -1,9 +1,9 @@
 package com.cleo.clarify.chassis.grpc;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 import java.util.SortedMap;
 
@@ -14,7 +14,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.cleo.clarify.chassis.consul.ServiceRegistrator;
-import com.cleo.clarify.chassis.grpc.test.TestServiceGrpc;
 import com.cleo.clarify.chassis.health.GrpcHealthResource;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
