@@ -1,5 +1,4 @@
 {
-  "bootstrap_expect": 3,
   "server": true,
   "datacenter": "vg-dc1",
   "data_dir": "/tmp/consul",
