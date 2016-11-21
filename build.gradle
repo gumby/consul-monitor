@@ -1,9 +1,10 @@
 buildscript {
   repositories {
-    maven { url 'http://192.168.33.10:8081/artifactory/plugins-release' }      
+    jcenter()
+  	mavenCentral()
   }
   dependencies {
-    classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4+'
+    classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
   }
 }
 
@@ -11,10 +12,9 @@ plugins {
   id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 
+apply plugin: 'com.google.protobuf'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.artifactory'
 
 group 'com.cleo.clarify.chassis'
 version '0.2.3'
@@ -27,47 +27,47 @@ shadowJar {
 repositories {
   mavenCentral()
   jcenter()
-  maven { url 'http://192.168.33.10:8081/artifactory/libs-release-local' }
 }
 
 def libraryGroupId = 'com.cleo.clarify'
 def libraryArtifactId = 'chassis'
 def libraryVersion = version
 
-publishing {
-  publications {
-    shadow(MavenPublication) {
-      groupId libraryGroupId
-      version libraryVersion
-      artifactId libraryArtifactId
-      artifact("$buildDir/libs/com.cleo.clarify.chassis-$version-all.jar")
-    }
-  }
-}
-
-artifactory {
-  contextUrl = 'http://192.168.33.10:8081/artifactory'
-  publish {
-    repository {
-      repoKey = 'libs-release-local'
-      username = 'admin'
-      password = 'password'
-      maven = true
-    }
-    defaults {
-      publications('shadow')
-      publishArtifacts = true
-
-      properties = ['qa.level': 'basic', 'dev.team': 'core']
-      publishPom = true
-    }
-  }
-}
-
 test {
     filter {
         includeTestsMatching "*AllTests"
     }
+}
+
+sourceSets {
+  test {
+    proto {
+      srcDir 'src/test/proto'
+    }
+    java {
+      srcDirs 'src/test/java', file("${protobuf.generatedFilesBaseDir}/test/java"), file("${protobuf.generatedFilesBaseDir}/test/grpc")
+    }
+  }
+}
+
+protobuf {
+  protoc {
+    // The version of protoc must match protobuf-java. If you don't depend on
+    // protobuf-java directly, you will be transitively depending on the
+    // protobuf-java version that grpc depends on.
+    artifact = "com.google.protobuf:protoc:3.0.2"
+  }
+  plugins {
+    grpc {
+      artifact = 'io.grpc:protoc-gen-grpc-java:1.0.1'
+    }
+  }
+  
+  generateProtoTasks {
+    all()*.plugins {
+      grpc {}
+    }
+  }
 }
 
 dependencies {
@@ -98,7 +98,6 @@ dependencies {
 	testCompile 'com.pszymczyk.consul:embedded-consul:0.2.0'
 	testCompile 'junit:junit:4.12'
 	testCompile 'com.jayway.awaitility:awaitility:1.7.0'
-	testCompile 'com.cleo.clarify:test-service:1.0'
 	testCompile 'com.github.tomakehurst:wiremock-standalone:2.3.1'
 	testCompile 'org.mockito:mockito-core:1.+'
 }
