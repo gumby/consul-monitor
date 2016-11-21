@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.cleo.clarify.chassis.grpc";
+option java_outer_classname = "TestServiceProto";
+
+package testservice;
+
+service TestService {
+
+  rpc testing(Greeting) returns (Howdy) {}
+
+}
+
+message Greeting {
+  string greeting = 1;
+  string name = 2;
+}
+
+message Howdy {
+  string name = 1;
+}
