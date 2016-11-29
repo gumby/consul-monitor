@@ -17,11 +17,12 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 
 group 'com.cleo.clarify.chassis'
-version '0.2.3'
+version '0.2.4'
 
 shadowJar {
   baseName = 'com.cleo.clarify.chassis'
   mergeServiceFiles()
+  relocate 'io.netty', 'internal.chassis.io.netty'
 }
 
 repositories {
@@ -37,6 +38,15 @@ test {
     filter {
         includeTestsMatching "*AllTests"
     }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier 'sources'
+	from sourceSets.main.allSource
+}
+ 
+artifacts {
+	archives sourcesJar
 }
 
 sourceSets {
