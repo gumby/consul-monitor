@@ -20,7 +20,7 @@ sudo unzip consul_web.zip -d /opt/consul/web
 echo Modifying/copying consul config...
 sudo mkdir /etc/consul.d
 sudo chmod a+w /etc/consul.d
-sudo jq --arg dc "$1" --arg addr "$2" --arg expect $3 '. + { "datacenter": $dc, "bind_addr": $addr, "client_addr": $addr, "bootstrap_expect": $expect }' /vagrant/conf/consul/config.json > tmp.$$.json
+sudo jq --arg dc $1 --arg addr $2 --arg expect $3 '. + { "datacenter": $dc, "bind_addr": $addr, "client_addr": $addr, "bootstrap_expect": $expect | tonumber }' /vagrant/conf/consul/config.json > tmp.$$.json
 sudo mv tmp.$$.json /etc/consul.d/config.json
 
 echo Creating consul user...
